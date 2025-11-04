@@ -24,12 +24,6 @@ const Dashboard = () => {
   const handleViewBooks = () => {
     navigate("/books");
   };
-  const handleBorrowBooks = () => {
-    navigate("/borrows");
-  };
-  const handleViewBorrowedBooks = () => {
-    navigate("/my-borrows");
-  };
 
   if (loading || !user) {
     return (
@@ -88,21 +82,11 @@ const Dashboard = () => {
                 >
                   📚 View Book List
                 </button>
-              </div>
-              <div className="mt-6 text-center">
                 <button
-                  onClick={handleBorrowBooks}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                  onClick={() => navigate("/categories")}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
                 >
-                  📚 Borrow Books
-                </button>
-              </div>
-              <div className="mt-6 text-center">
-                <button
-                  onClick={handleViewBorrowedBooks}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                  📚View Borrowed Books
+                  ➕ View Category
                 </button>
               </div>
             </div>
@@ -116,6 +100,7 @@ const Dashboard = () => {
                 >
                   ➕ Add New Book
                 </button>
+              
               </div>
             )}
 

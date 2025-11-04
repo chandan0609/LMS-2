@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBooks } from '../../redux/slices/bookSlice';
+import { useNavigate } from 'react-router-dom';
 
 const BookList = () => {
   const dispatch = useDispatch();
   const { books, loading, error } = useSelector((state) => state.books);
+
+const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchBooks());
@@ -15,11 +18,24 @@ const BookList = () => {
 
   return (
     <div className="max-w-5xl mx-auto mt-8 px-4">
-      <h2 className="text-3xl font-bold mb-6 text-blue-700 text-center">📚 Available Books</h2>
+      <h2 className="text-3xl font-bold mb-6 text-blue-700 text-center">
+        📚 Available Books
+      </h2>
+      <button
+        onClick={() => navigate("/books/search")}
+        className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+      >
+       Search Books
+      </button>
       <div className="grid md:grid-cols-3 gap-6">
         {books.map((book) => (
-          <div key={book.id} className="border rounded-lg p-4 shadow hover:shadow-md transition">
-            <h3 className="text-xl font-semibold text-gray-800">{book.title}</h3>
+          <div
+            key={book.id}
+            className="border rounded-lg p-4 shadow hover:shadow-md transition"
+          >
+            <h3 className="text-xl font-semibold text-gray-800">
+              {book.title}
+            </h3>
             <p className="text-sm text-gray-600 mt-1">Author: {book.author}</p>
             <p className="text-sm text-gray-600">Category: {book.category}</p>
           </div>

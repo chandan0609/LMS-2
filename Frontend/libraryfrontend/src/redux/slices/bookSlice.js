@@ -13,6 +13,22 @@ export const fetchBookById = createAsyncThunk('books/fetchBookById', async (id) 
   return response;
 });
 
+// // ✅ Search books (with optional search)
+export const searchBooks = createAsyncThunk(
+  "books/searchBooks",
+  async (searchTerm = "", { rejectWithValue }) => {
+    try {
+      const endpoint = searchTerm
+        ? `/books/?search=${encodeURIComponent(searchTerm)}`
+        : "/books/";
+      const data = await apiClient.get(endpoint);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const createBook = createAsyncThunk('books/createBook',async(bookData)=>{
     console.log("📤 Creating book with data:", bookData);
     const response = await apiClient.post('/books/',bookData);
@@ -69,14 +85,14 @@ const bookSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      .addCase(createBook.pending,(state) => {
+      .addCase(createBook.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createBook.fulfilled,(state,action) => {
+      .addCase(createBook.fulfilled, (state, action) => {
         state.loading = false;
         state.books.push(action.payload);
       })
-      .addCase(createBook.rejected,(state,action) => {
+      .addCase(createBook.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
@@ -104,6 +120,19 @@ const bookSlice = createSlice({
       .addCase(deleteBook.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
+      })
+      // searchbook
+      .addCase(searchBooks.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(searchBooks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.books = action.payload;
+      })
+      .addCase(searchBooks.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 
