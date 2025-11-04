@@ -52,6 +52,13 @@ class BorrowRecordViewSet(viewsets.ModelViewSet):
     serializer_class = BorrowRecordSerializer
     permission_classes = [IsAuthenticated]
     
+
+    def get_serializer_context(self):
+        """Pass request to serializer"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+    
     def get_queryset(self):
         """Filter records based on user role"""
         user = self.request.user
@@ -66,9 +73,9 @@ class BorrowRecordViewSet(viewsets.ModelViewSet):
             raise ValidationError("This book is not available for borrowing")
         
         # Create borrow record
-        borrow_record = serializer.save(user=self.request.user)
+        serializer.save(user=self.request.user)
         
-        # Update book status
+        # Update book statusit
         book.status = 'borrowed'
         book.save()
     

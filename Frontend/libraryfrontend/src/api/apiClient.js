@@ -1,31 +1,56 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+import axios from "axios";
+
+const API_BASE_URL = "http://localhost:8000/api";
+
+// Create axios instance with base configuration
+const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+// Request interceptor to add token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Response interceptor to handle errors
+axiosInstance.interceptors.response.use(
+  (response) => {
+    return response.data;
+  },
+  (error) => {
+    // Extract error message from various possible locations
+    const message =
+      error.response?.data?.detail ||
+      error.response?.data?.message ||
+      error.response?.statusText ||
+      error.message ||
+      "Request failed";
+
+    console.error("API Error:", message);
+    return Promise.reject(new Error(message));
+  }
+);
 
 const apiClient = {
-  request: async (endpoint, options = {}) => {
-    const token = localStorage.getItem('access_token');
-    const headers = {
-      'Content-Type': 'application/json',
-      ...(token && { Authorization: `Bearer ${token}` }),
-      ...options.headers,
-    };
+  get: (endpoint) => axiosInstance.get(endpoint),
 
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+  post: (endpoint, body) => axiosInstance.post(endpoint, body),
 
-    const data = await response.json();
+  put: (endpoint, body) => axiosInstance.put(endpoint, body),
 
-    if (!response.ok) {
-      throw new Error(data.detail || data.message || 'Request failed');
-    }
-
-    return data;
-  },
-
-  get: (endpoint) => apiClient.request(endpoint),
-  post: (endpoint, body) => apiClient.request(endpoint, { method: 'POST', body: JSON.stringify(body) }),
-  put: (endpoint, body) => apiClient.request(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
-  delete: (endpoint) => apiClient.request(endpoint, { method: 'DELETE' }),
+  delete: (endpoint) => axiosInstance.delete(endpoint),
 };
+
 export default apiClient;

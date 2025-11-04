@@ -1,7 +1,7 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { logout, fetchCurrentUser } from '../../redux/slices/authSlice';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { logout, fetchCurrentUser } from "../../redux/slices/authSlice";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
@@ -10,7 +10,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      navigate('/login');
+      navigate("/login");
     } else if (!user) {
       dispatch(fetchCurrentUser());
     }
@@ -18,11 +18,17 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
 
   const handleViewBooks = () => {
-    navigate('/books');
+    navigate("/books");
+  };
+  const handleBorrowBooks = () => {
+    navigate("/borrows");
+  };
+  const handleViewBorrowedBooks = () => {
+    navigate("/my-borrows");
   };
 
   if (loading || !user) {
@@ -49,10 +55,12 @@ const Dashboard = () => {
               Logout
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div className="bg-blue-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold mb-4">Welcome, {user.username}! 👋</h3>
+              <h3 className="text-xl font-semibold mb-4">
+                Welcome, {user.username}! 👋
+              </h3>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Email</p>
@@ -81,25 +89,41 @@ const Dashboard = () => {
                   📚 View Book List
                 </button>
               </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={handleBorrowBooks}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                >
+                  📚 Borrow Books
+                </button>
+              </div>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={handleViewBorrowedBooks}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+                >
+                  📚View Borrowed Books
+                </button>
+              </div>
             </div>
 
             {/* ➕ Add New Book Button (Visible only for Admin and Librarian) */}
-{['admin', 'librarian'].includes(user.role) && (
-  <div className="mt-4 text-center">
-    <button
-      onClick={() => navigate('/books/new')}
-      className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
-    >
-      ➕ Add New Book
-    </button>
-  </div>
-)}
+            {["admin", "librarian"].includes(user.role) && (
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => navigate("/books/new")}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+                >
+                  ➕ Add New Book
+                </button>
+              </div>
+            )}
 
-            
             <div className="bg-green-50 p-6 rounded-lg">
               <h4 className="font-semibold mb-2">🎉 Authentication Working!</h4>
               <p className="text-sm text-gray-700 mb-4">
-                Your registration and login system is working correctly. Next steps:
+                Your registration and login system is working correctly. Next
+                steps:
               </p>
               <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
                 <li>Build book management features (CRUD operations)</li>
@@ -126,11 +150,14 @@ const Dashboard = () => {
             </div>
 
             {/* Role-based features preview */}
-            {user.role === 'admin' && (
+            {user.role === "admin" && (
               <div className="bg-purple-50 p-6 rounded-lg border-2 border-purple-200">
-                <h4 className="font-semibold mb-2">👑 Admin Features Available</h4>
+                <h4 className="font-semibold mb-2">
+                  👑 Admin Features Available
+                </h4>
                 <p className="text-sm text-gray-700">
-                  As an admin, you'll be able to manage books, users, and view all borrow records.
+                  As an admin, you'll be able to manage books, users, and view
+                  all borrow records.
                 </p>
               </div>
             )}

@@ -1,28 +1,38 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Provider } from 'react-redux';
-import store from './redux/store';
-import { ToastContainer } from 'react-toastify';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { Provider } from "react-redux";
+import store from "./redux/store";
+import { ToastContainer } from "react-toastify";
 
 // Auth Components
-import Login from './components/auth/Login';
-import Register from './components/auth/Register';
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
 
 // Layout Components
-import Dashboard from './components/layout/Dashboard';
-import Header from './components/layout/Header';
-import Footer from './components/layout/Footer';
+import Dashboard from "./components/layout/Dashboard";
+import Header from "./components/layout/Header";
+import Footer from "./components/layout/Footer";
 
 // Private Route
-import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from "./components/PrivateRoute";
 
 // Book Components
-import BookList from './components/books/BookList';
-import BookForm from './components/books/BookForm'; // ✅ new import
+import BookList from "./components/books/BookList";
+import BookForm from "./components/books/BookForm"; // ✅ new import
 
+//Borrow Components
+import BorrowForm from "./components/borrowings/BorrowForm";
+import BorrowList from "./components/borrowings/BorrowList";
 // Placeholder Components
-const BorrowList = () => <div className="p-8">Borrow List - Coming Soon</div>;
-const CategoryList = () => <div className="p-8">Category List - Coming Soon</div>;
+
+const CategoryList = () => (
+  <div className="p-8">Category List - Coming Soon</div>
+);
 const UserList = () => <div className="p-8">User List - Coming Soon</div>;
 
 function App() {
@@ -66,6 +76,14 @@ function App() {
 
           <Route
             path="/borrows"
+            element={
+              <PrivateRoute>
+                <BorrowForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/my-borrows"
             element={
               <PrivateRoute>
                 <BorrowList />
