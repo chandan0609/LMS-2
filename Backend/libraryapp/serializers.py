@@ -30,9 +30,26 @@ class BookSerializer(serializers.ModelSerializer):
         fields = ['id','title','author','category','ISBN','status']
 
 class BorrowRecordSerializer(serializers.ModelSerializer):
+    book = BookSerializer()
+    user_info = serializers.SerializerMethodField()
+    
     class Meta:
         model = BorrowRecord
-        fields = ['id','user','book','borrow_date','due_date','return_date']
+        fields = ['id','user','book','borrow_date','due_date','return_date', 'user_info']
+        read_only_fields = ['user','borrow_date','return_date']
+    
+    def get_user_info(self, obj):
+        """Return user information for admin/librarian"""
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
+            if user.role in ['admin', 'librarian']:
+                return {
+                    'id': obj.user.id,
+                    'username': obj.user.username,
+                    'email': obj.user.email
+                }
+        return None
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
