@@ -15,11 +15,11 @@ from .permissions import IsAdminOrLibrarian
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    
+# for cuurent profile   
     @action(detail = False, methods = ['get'] , permission_classes = [IsAuthenticated])
     def me(self,request):
         serializer = self.get_serializer(request.user)
-        return Response(serializer.data)
+        return Response(serializer.data) 
     
     def get_permissions(self):
         if self.action == 'create':
@@ -113,10 +113,11 @@ class BorrowRecordViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes=[IsAdminOrLibrarian]
     
     def get_permissions(self):
         if self.action in ['list', 'retrieve']:
             permission_classes = [IsAuthenticated]
         else:
-            permission_classes = [IsAdminUser]
+            permission_classes = [IsAdminOrLibrarian]
         return [permission() for permission in permission_classes]
