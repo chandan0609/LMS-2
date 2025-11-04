@@ -30,7 +30,7 @@ const navigate = useNavigate();
       <div className="grid md:grid-cols-3 gap-6">
         {books.map((book) => (
           <div
-            key={book.id}
+            key={book.id} onClick={()=> navigate(`./${book.id}`)}
             className="border rounded-lg p-4 shadow hover:shadow-md transition"
           >
             <h3 className="text-xl font-semibold text-gray-800">

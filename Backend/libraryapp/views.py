@@ -15,6 +15,7 @@ from .permissions import IsAdminOrLibrarian
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes= [IsAdminUser]
 # for cuurent profile   
     @action(detail = False, methods = ['get'] , permission_classes = [IsAuthenticated])
     def me(self,request):
@@ -26,7 +27,7 @@ class UserViewSet(viewsets.ModelViewSet):
             # Allow registration without authentication
             permission_classes = [AllowAny]
         elif self.action == 'list':
-            permission_classes = [IsAdminUser]
+            permission_classes = [IsAdminOrLibrarian]
         elif self.action in ['retrieve', 'update', 'partial_update','me']:
             permission_classes = [IsAuthenticated]
         else:
@@ -109,13 +110,41 @@ class BorrowRecordViewSet(viewsets.ModelViewSet):
         borrow_record.return_date = timezone.now()
         borrow_record.save()
         
+       # Fine calculation
+        if now > borrow_record.due_date:
+            days_late = (now - borrow_record.due_date).days
+            borrow_record.fine_amount = days_late * 10  # ₹10 per day
+            borrow_record.fine_paid = False
+
+        borrow_record.save()
+
         # Update book status
         book = borrow_record.book
         book.status = 'available'
         book.save()
-        
-        return Response({'message': 'Book returned successfully'})
 
+        message = "Book returned successfully" 
+        if borrow_record.fine_amount > 0:
+            message += f" with a fine of ₹{borrow_record.fine_amount}"
+
+        return Response({'message': message})
+
+    # ✅ Librarian/Admin — view all unpaid fines
+    @action(detail=False, methods=['get'], permission_classes=[IsAdminUser])
+    def unpaid_fines(self, request):
+        fines = BorrowRecord.objects.filter(fine_amount__gt=0, fine_paid=False)
+        serializer = self.get_serializer(fines, many=True)
+        return Response(serializer.data)
+
+    # ✅ Librarian/Admin — mark fine as paid manually
+    @action(detail=True, methods=['post'], permission_classes=[IsAdminUser])
+    def mark_fine_paid(self, request, pk=None):
+        record = self.get_object()
+        if record.fine_paid:
+            return Response({'message': 'Fine already marked as paid'}, status=status.HTTP_400_BAD_REQUEST)
+        record.fine_paid = True
+        record.save()
+        return Response({'message': f'Fine of ₹{record.fine_amount} for {record.book.title} marked as paid'})
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()

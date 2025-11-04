@@ -26,14 +26,16 @@ const BorrowList = () => <div className="p-8">Borrow List - Coming Soon</div>;
 import CategoryList from './components/categories/CategoryList';
 import CategoryForm from './components/categories/CategoryForm';
 import BookSearch from './components/books/BookSearch';
-const UserList = () => <div className="p-8">User List - Coming Soon</div>;
+import UserList from './components/users/UserList'
+import BookDetail from './components/books/BookDetail';
+import FinePayment from './components/layout/pages/FinePayment';
 
 function App() {
   return (
     <Provider store={store}>
       <Router>
         <Header />
-         <Sidebar />
+        <Sidebar />
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
@@ -63,6 +65,15 @@ function App() {
             element={
               <PrivateRoute>
                 <BookSearch />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="/books/:id"
+            element={
+              <PrivateRoute>
+                <BookDetail />
               </PrivateRoute>
             }
           />
@@ -103,6 +114,14 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/fines"
+            element={
+              <PrivateRoute librarianAllowed>
+                <FinePayment />
+              </PrivateRoute>
+            }
+          />
 
           {/* Admin Only Route */}
           <Route
@@ -122,7 +141,6 @@ function App() {
         </Routes>
 
         <Footer />
-      
       </Router>
     </Provider>
   );

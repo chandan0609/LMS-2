@@ -35,8 +35,8 @@ class BorrowRecordSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = BorrowRecord
-        fields = ['id','user','book','borrow_date','due_date','return_date', 'user_info']
-        read_only_fields = ['user','borrow_date','return_date']
+        fields = '__all__'
+        read_only_fields = ['user','borrow_date','return_date','fine_amount','fine_paid']
     
     def get_user_info(self, obj):
         """Return user information for admin/librarian"""

@@ -100,7 +100,18 @@ const Dashboard = () => {
                 >
                   ➕ Add New Book
                 </button>
-              
+                <button
+                  onClick={() => navigate("/users")}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+                >
+                  ➕ View Members
+                </button>
+                <button
+                  onClick={() => navigate("/fines")}
+                  className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition"
+                >
+                  $ View Fine
+                </button>
               </div>
             )}
 

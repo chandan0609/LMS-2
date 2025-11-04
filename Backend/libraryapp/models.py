@@ -47,6 +47,20 @@ class BorrowRecord(models.Model):
     borrow_date = models.DateTimeField(auto_now_add=True)
     due_date = models.DateTimeField()
     return_date = models.DateTimeField(null=True, blank=True)
+    fine_amount = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    fine_paid = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"{self.user.username} - {self.book.title}"
+    def calculate_fine(self):
+        """Automatically calculate fine if overdue."""
+        if not self.return_date:
+            return 0
+        if self.return_date > self.due_date:
+            days_overdue = (self.return_date - self.due_date).days
+            return days_overdue * 10  # Example: ₹10/day fine
+        return 0
+
+    def save(self, *args, **kwargs):
+        # Auto-calculate fine when the book is returned
+        if self.return_date:
+            self.fine_amount = self.calculate_fine()
+        super().save(*args, **kwargs)
